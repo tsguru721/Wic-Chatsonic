@@ -31,6 +31,65 @@ $w("#input1").onKeyPress((event) => {
         $w("#input1").value = "";
     }
 });
+$w("#button1").onClick(() => {
+    let searchResult = {};
+    let inputValue = $w("#searchBox2").value;
+    let promptsInSearchEvent = "";
+    let searchKeywardWithPrompts = "";
+    prompts.map((value, index) => {
+        promptsInSearchEvent += " " + value;
+    });
+    searchKeywardWithPrompts = promptsInSearchEvent + "" + inputValue;
+
+    axios
+        .post(
+            "https://api.writesonic.com/v2/business/content/chatsonic?engine=premium",
+            {
+                enable_google_results: true,
+                enable_memory: true,
+                // history_data: [{ newKey: 'New Value' }],
+                input_text: searchKeywardWithPrompts,
+            },
+            {
+                headers: {
+                    accept: "application/json",
+                    "content-type": "application/json",
+                    "X-API-KEY": "39a7d8bc-80b2-4764-96e2-81ed1667b5a5",
+                },
+            }
+        )
+        .then(function (response) {
+            searchResult = response;
+            wixStorage.local.setItem("SearchResult", searchResult.data.message);
+            // const a = wixStorage.local.getItem('SearchResult');
+            wixData
+                .insert("SearchResult", {
+                    result: searchResult.data.message,
+                })
+                .then((results) => {})
+                .catch((error) => {
+                    console.log(error);
+                });
+            wixLocation.to("/blank-4");
+
+            //   //Read start
+            //   const query = wixData.query("SearchResult")
+            //   query.find()
+            //   .then((results) => {
+            //     // Do something with the results
+            // console.log("Read collection data: ", results.items[0].result);
+            //   })
+            //   .catch((err) => {
+            //     // Handle the error
+            //     console.error(err);
+            //   });
+            // // Read end
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+});
+
 $w("#searchBox2").onKeyPress(async (event) => {
     let searchResult = {};
     let key = event.key; // "A"
@@ -75,26 +134,12 @@ $w("#searchBox2").onKeyPress(async (event) => {
                     .insert("SearchResult", {
                         result: searchResult.data.message,
                     })
-                    .then((results) => {
-                        // Get the current page's URL
-                        const currentUrl = wixLocation.url;
-
-                        // Get the current page's path
-                        const currentPath = wixLocation.path;
-
-                        // Get the value of a query parameter
-                        const myQueryParam = wixLocation.query["myQueryParam"];
-
-                        // Navigate to a new page
-                        // wixLocation.to('/my-new-page');
-
-                        // Navigate to a new page with a page transition animation
-                        wixLocation.to("/my-Search Result-page");
-                    })
+                    .then((results) => {})
                     .catch((error) => {
                         console.log(error);
                     });
 
+                wixLocation.to("/blank-4");
                 //   //Read start
                 //   const query = wixData.query("SearchResult")
                 //   query.find()
@@ -112,62 +157,4 @@ $w("#searchBox2").onKeyPress(async (event) => {
                 console.log(error);
             });
     }
-});
-
-$w("#button1").onClick(async (event) => {
-    let searchResult = {};
-    let inputValue = $w("#searchBox2").value;
-    let promptsInSearchEvent = "";
-    let searchKeywardWithPrompts = "";
-    prompts.map((value, index) => {
-        promptsInSearchEvent += " " + value;
-    });
-    searchKeywardWithPrompts = promptsInSearchEvent + "" + inputValue;
-
-    await axios
-        .post(
-            "https://api.writesonic.com/v2/business/content/chatsonic?engine=premium",
-            {
-                enable_google_results: true,
-                enable_memory: true,
-                // history_data: [{ newKey: 'New Value' }],
-                input_text: searchKeywardWithPrompts,
-            },
-            {
-                headers: {
-                    accept: "application/json",
-                    "content-type": "application/json",
-                    "X-API-KEY": "39a7d8bc-80b2-4764-96e2-81ed1667b5a5",
-                },
-            }
-        )
-        .then(function (response) {
-            searchResult = response;
-            wixStorage.local.setItem("SearchResult", searchResult.data.message);
-            // const a = wixStorage.local.getItem('SearchResult');
-            wixData
-                .insert("SearchResult", {
-                    result: searchResult.data.message,
-                })
-                .then((results) => {})
-                .catch((error) => {
-                    console.log(error);
-                });
-
-            //   //Read start
-            //   const query = wixData.query("SearchResult")
-            //   query.find()
-            //   .then((results) => {
-            //     // Do something with the results
-            // console.log("Read collection data: ", results.items[0].result);
-            //   })
-            //   .catch((err) => {
-            //     // Handle the error
-            //     console.error(err);
-            //   });
-            // // Read end
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
 });
