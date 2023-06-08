@@ -75,7 +75,22 @@ $w("#searchBox2").onKeyPress(async (event) => {
                     .insert("SearchResult", {
                         result: searchResult.data.message,
                     })
-                    .then((results) => {})
+                    .then((results) => {
+                        // Get the current page's URL
+                        const currentUrl = wixLocation.url;
+
+                        // Get the current page's path
+                        const currentPath = wixLocation.path;
+
+                        // Get the value of a query parameter
+                        const myQueryParam = wixLocation.query["myQueryParam"];
+
+                        // Navigate to a new page
+                        // wixLocation.to('/my-new-page');
+
+                        // Navigate to a new page with a page transition animation
+                        wixLocation.to("/my-Search Result-page");
+                    })
                     .catch((error) => {
                         console.log(error);
                     });
@@ -156,17 +171,3 @@ $w("#button1").onClick(async (event) => {
             console.log(error);
         });
 });
-// Get the current page's URL
-const currentUrl = wixLocation.url;
-
-// Get the current page's path
-const currentPath = wixLocation.path;
-
-// Get the value of a query parameter
-const myQueryParam = wixLocation.query["myQueryParam"];
-
-// Navigate to a new page
-// wixLocation.to('/my-new-page');
-
-// Navigate to a new page with a page transition animation
-wixLocation.to("/my-Search Result-page");
