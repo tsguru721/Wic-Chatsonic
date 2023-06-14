@@ -2,8 +2,16 @@ import axios from "axios";
 import wixData from "wix-data";
 import wixStorage from "wix-storage";
 import wixLocation from "wix-location";
-
-let prompts = ["Law2 "];
+wixData
+    .query("SearchResult")
+    .find()
+    .then((results) => {
+        if (results.items[0].result) {
+            console.log(results.items[0].result);
+            $w("#text21").html = results.items[0].result;
+        }
+    });
+let prompts = ["Law "];
 let initialPromptsToString = "";
 prompts.map((value, index) => {
     let input = value;
@@ -39,7 +47,11 @@ $w("#button1").onClick(() => {
     prompts.map((value, index) => {
         promptsInSearchEvent += " " + value;
     });
-    searchKeywardWithPrompts = promptsInSearchEvent + "" + inputValue;
+    searchKeywardWithPrompts =
+        "Write a succinct and factual answer for legal professionals with the goal of providing relevant five precedents and providing five references to the source of the information" +
+        promptsInSearchEvent +
+        "" +
+        inputValue;
 
     axios
         .post(
@@ -62,15 +74,17 @@ $w("#button1").onClick(() => {
             searchResult = response;
             wixStorage.local.setItem("SearchResult", searchResult.data.message);
             // const a = wixStorage.local.getItem('SearchResult');
+            $w("#text21").html = searchResult.data.message;
             wixData
                 .insert("SearchResult", {
                     result: searchResult.data.message,
+                    query: searchKeywardWithPrompts,
                 })
                 .then((results) => {})
                 .catch((error) => {
                     console.log(error);
                 });
-            wixLocation.to("/blank-4");
+            // wixLocation.to("/blank-4");
 
             //   //Read start
             //   const query = wixData.query("SearchResult")
@@ -130,16 +144,17 @@ $w("#searchBox2").onKeyPress(async (event) => {
                     searchResult.data.message
                 );
                 // const a = wixStorage.local.getItem('SearchResult');
-                wixData
-                    .insert("SearchResult", {
-                        result: searchResult.data.message,
-                    })
-                    .then((results) => {})
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                $w("#text21").html = searchResult.data.message;
+                // wixData
+                //     .insert("SearchResult", {
+                //         result: searchResult.data.message,
+                //     })
+                //     .then((results) => {})
+                //     .catch((error) => {
+                //         console.log(error);
+                //     });
 
-                wixLocation.to("/blank-4");
+                // wixLocation.to("/blank-4");
                 //   //Read start
                 //   const query = wixData.query("SearchResult")
                 //   query.find()
